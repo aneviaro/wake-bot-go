@@ -12,6 +12,13 @@ const (
 	BestTimeToWakeUp
 	Greetings
 	NotCorrectCommand
+	Usage
+	GotIt
+	TimeFormatQuestion
+	TimeFormat1
+	TimeFormat2
+	WakeUp
+	GoToSleep
 )
 
 func Get(msgID int, langCode string) string {

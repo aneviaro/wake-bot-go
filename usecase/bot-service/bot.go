@@ -6,7 +6,7 @@ type BotService struct {
 	tg *tgbotapi.BotAPI
 }
 
-func MakeBotService(bot *tgbotapi.BotAPI) *BotService {
+func NewBotService(bot *tgbotapi.BotAPI) *BotService {
 	return &BotService{tg: bot}
 }
 
@@ -20,16 +20,26 @@ func (bot *BotService) SendMessage(chatID int64, message string, replyTo int, pa
 	if keyboard != nil {
 		msg.ReplyMarkup = keyboard
 	}
+
 	msg.ParseMode = parseMode
 	_, err := bot.tg.Send(msg)
 	return err
 }
 
-func (bot *BotService) MakeClarificationButtons() tgbotapi.InlineKeyboardMarkup {
+func (bot *BotService) MakeClarificationButtons(text1, data1, text2, data2 string) tgbotapi.InlineKeyboardMarkup {
 	var buttons []tgbotapi.InlineKeyboardButton
 	buttons = append(buttons,
-		tgbotapi.NewInlineKeyboardButtonData("Wake up", "1"),
-		tgbotapi.NewInlineKeyboardButtonData("Go to sleep", "2"),
+		tgbotapi.NewInlineKeyboardButtonData(text1, data1),
+		tgbotapi.NewInlineKeyboardButtonData(text2, data2),
+	)
+
+	return tgbotapi.NewInlineKeyboardMarkup(buttons)
+}
+
+func (bot *BotService) MakeOneButton(text1, data1 string) tgbotapi.InlineKeyboardMarkup {
+	var buttons []tgbotapi.InlineKeyboardButton
+	buttons = append(buttons,
+		tgbotapi.NewInlineKeyboardButtonData(text1, data1),
 	)
 	return tgbotapi.NewInlineKeyboardMarkup(buttons)
 }

@@ -1,11 +1,14 @@
 package main
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"os"
 	updatehandler "wake-bot/bot/update-handler"
+	"wake-bot/storage"
 	botservice "wake-bot/usecase/bot-service"
+	user_service "wake-bot/usecase/user-service"
+
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func main() {
@@ -14,9 +17,15 @@ func main() {
 		log.Panicf("Unable to start tgbot, %v", err)
 	}
 
-	botService := botservice.MakeBotService(bot)
+	store, err := storage.NewBoltStore()
+	if err != nil {
+		log.Panicf("Unable to start tgbot, %v", err)
+	}
 
-	handler := updatehandler.MakeUpdateHandler(botService)
+	botService := botservice.NewBotService(bot)
+	userService := user_service.NewUserService(store)
+
+	handler := updatehandler.MakeUpdateHandler(botService, userService)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
