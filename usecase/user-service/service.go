@@ -28,7 +28,7 @@ func (u UserService) Update(fromUser user.User) error {
 	}
 
 	switch {
-	case fromUser.TimeZone != nil:
+	case fromUser.TimeZone != "":
 		toUser.TimeZone = fromUser.TimeZone
 	case !fromUser.WakeUpTime.IsZero():
 		toUser.WakeUpTime = fromUser.WakeUpTime

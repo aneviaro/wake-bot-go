@@ -24,5 +24,10 @@ func Get(id int) string {
 		"24-hour",
 		"Wake Up",
 		"Go to sleep",
+		"Please, send me your location so I can determine your timezone. I don't store your personal information, " +
+			"so nothing to worry about!",
+		"I can't determine your timezone.",
+		"Please, reply to this message with a number from -12 to +14, determining your timezone.",
+		"Thanks! Your timezone is %s.",
 	}[id]
 }

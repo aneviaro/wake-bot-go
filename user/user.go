@@ -10,8 +10,8 @@ const (
 )
 
 type User struct {
-	ChatID     int64          `json:"chat_id"`
-	TimeFormat TimeFormat     `json:"time_format"`
-	TimeZone   *time.Location `json:"time_zone"`
-	WakeUpTime time.Time      `json:"wake_up_time"`
+	ChatID     int64      `json:"chat_id"`
+	TimeFormat TimeFormat `json:"time_format"`
+	TimeZone   string     `json:"time_zone"`
+	WakeUpTime time.Time  `json:"wake_up_time"`
 }

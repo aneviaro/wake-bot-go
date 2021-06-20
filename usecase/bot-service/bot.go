@@ -1,6 +1,11 @@
 package bot_service
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+import (
+	"fmt"
+	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
 
 type BotService struct {
 	tg *tgbotapi.BotAPI
@@ -11,7 +16,7 @@ func NewBotService(bot *tgbotapi.BotAPI) *BotService {
 }
 
 func (bot *BotService) SendMessage(chatID int64, message string, replyTo int, parseMode string,
-	keyboard *tgbotapi.InlineKeyboardMarkup) error {
+	keyboard interface{}) error {
 	msg := tgbotapi.NewMessage(chatID, message)
 	if replyTo != 0 {
 		msg.ReplyToMessageID = replyTo
@@ -42,4 +47,28 @@ func (bot *BotService) MakeOneButton(text1, data1 string) tgbotapi.InlineKeyboar
 		tgbotapi.NewInlineKeyboardButtonData(text1, data1),
 	)
 	return tgbotapi.NewInlineKeyboardMarkup(buttons)
+}
+
+func (bot *BotService) MakeCurrentTimeButtons(timeFormat string) tgbotapi.InlineKeyboardMarkup {
+	now := time.Now()
+	currentMinutes := now.Minute()
+	startOfToday := time.Now().Truncate(24 * time.Hour).Add(time.Duration(currentMinutes) * time.Minute)
+	buttons := make([]tgbotapi.InlineKeyboardButton, 24)
+	for i := 0; i < 24; i++ {
+		startOfHour := startOfToday.Add(1 * time.Hour).Format(timeFormat)
+		buttons[i] = tgbotapi.NewInlineKeyboardButtonData(startOfHour, fmt.Sprintf("timezone.%d", i))
+	}
+
+	return tgbotapi.NewInlineKeyboardMarkup(buttons)
+}
+
+func (bot BotService) MakeRequestLocationButton() tgbotapi.ReplyKeyboardMarkup {
+	button := tgbotapi.NewKeyboardButton("Location/Timezone")
+	button.RequestLocation = true
+
+	markup := tgbotapi.NewReplyKeyboard(tgbotapi.NewKeyboardButtonRow(button))
+	markup.ResizeKeyboard = true
+	markup.OneTimeKeyboard = true
+
+	return markup
 }

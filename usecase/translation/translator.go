@@ -19,6 +19,10 @@ const (
 	TimeFormat2
 	WakeUp
 	GoToSleep
+	Timezone
+	TimezoneNotOk
+	SendTimezoneManually
+	TimezoneOk
 )
 
 func Get(msgID int, langCode string) string {

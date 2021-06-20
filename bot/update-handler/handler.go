@@ -11,6 +11,7 @@ import (
 	"wake-bot/user"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"gopkg.in/ugjka/go-tz.v2/tz"
 )
 
 type UpdateHandler struct {
@@ -34,6 +35,10 @@ func (u *UpdateHandler) HandleUpdate(update *tgbotapi.Update) error {
 			return u.handleCommand(update)
 		}
 
+		if update.Message.Location != nil {
+			return u.handleLocationTimezone(update)
+		}
+
 		log.Printf("Handling incoming message: %s.", update.Message.Text)
 		return u.handleMessage(update)
 	}
@@ -47,7 +52,6 @@ func (u *UpdateHandler) HandleUpdate(update *tgbotapi.Update) error {
 }
 
 func (u *UpdateHandler) handleMessage(update *tgbotapi.Update) error {
-
 	us, err := u.userService.GetByID(update.Message.Chat.ID)
 	var timeFormat user.TimeFormat
 
@@ -143,12 +147,14 @@ func (u UpdateHandler) handleTimeFormatCallback(update *tgbotapi.Update) error {
 		return err
 	}
 
+	markup := u.botService.MakeRequestLocationButton()
+
 	return u.botService.SendMessage(
 		update.CallbackQuery.Message.Chat.ID,
-		fmt.Sprintf(translation.Get(translation.Usage, langCode), time.Now().UTC().Format(string(us.TimeFormat))),
+		translation.Get(translation.Timezone, langCode),
 		0,
 		"Markdown",
-		nil,
+		&markup,
 	)
 }
 
@@ -221,6 +227,43 @@ func (u *UpdateHandler) handleClarificationCallback(update *tgbotapi.Update) err
 
 	return u.botService.SendMessage(update.CallbackQuery.Message.Chat.ID, msgTest, 0,
 		"Markdown", nil)
+}
+
+func (u *UpdateHandler) handleLocationTimezone(update *tgbotapi.Update) error {
+	langCode := update.Message.From.LanguageCode
+
+	zone, err := tz.GetZone(tz.Point{
+		Lon: update.Message.Location.Longitude,
+		Lat: update.Message.Location.Latitude,
+	})
+	if err != nil {
+		e := u.botService.SendMessage(
+			update.Message.Chat.ID,
+			translation.Get(translation.TimezoneNotOk, langCode),
+			0,
+			"Markdown",
+			nil,
+		)
+
+		return fmt.Errorf("%s %s", err, e)
+	}
+
+	var us user.User
+	us.ChatID = update.Message.Chat.ID
+	us.TimeZone = zone[0]
+
+	err = u.userService.Update(us)
+	if err != nil {
+		return err
+	}
+
+	return u.botService.SendMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintf(translation.Get(translation.TimezoneOk, langCode), zone[0]),
+		0,
+		"Markdown",
+		nil,
+	)
 }
 
 func makeTimesArr(inputTime *time.Time, coef int) []time.Time {
