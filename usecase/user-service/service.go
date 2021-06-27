@@ -6,10 +6,10 @@ import (
 )
 
 type UserService struct {
-	store *storage.Storage
+	store storage.Store
 }
 
-func NewUserService(store *storage.Storage) *UserService {
+func NewUserService(store storage.Store) *UserService {
 	return &UserService{store: store}
 }
 

@@ -1,6 +1,10 @@
 package user
 
-import "time"
+import (
+	"time"
+
+	"cloud.google.com/go/datastore"
+)
 
 type TimeFormat string
 
@@ -10,8 +14,9 @@ const (
 )
 
 type User struct {
-	ChatID     int64          `json:"chat_id"`
-	TimeFormat TimeFormat     `json:"time_format"`
-	TimeZone   *time.Location `json:"time_zone"`
-	WakeUpTime time.Time      `json:"wake_up_time"`
+	K          *datastore.Key `datastore:"__key__"`
+	ChatID     int64          `json:"chat_id" datastore:"chat_id"`
+	TimeFormat TimeFormat     `json:"time_format" datastore:"time_format"`
+	TimeZone   *time.Location `json:"time_zone" datastore:"time_zone"`
+	WakeUpTime time.Time      `json:"wake_up_time" datastore:"wake_up_time"`
 }
