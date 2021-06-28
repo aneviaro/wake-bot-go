@@ -1,8 +1,10 @@
 package update_handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 	botservice "wake-bot/usecase/bot-service"
@@ -19,6 +21,29 @@ type UpdateHandler struct {
 	userService user_service.Service
 }
 
+// parseTelegramRequest handles incoming update from the Telegram web hook
+func parseTelegramRequest(r *http.Request) (*tgbotapi.Update, error) {
+	var update tgbotapi.Update
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		log.Printf("could not decode incoming update %s", err.Error())
+		return nil, err
+	}
+	return &update, nil
+}
+
+func (u *UpdateHandler) HandleTelegramWebHook(_ http.ResponseWriter, r *http.Request) {
+	var update, err = parseTelegramRequest(r)
+	if err != nil {
+		log.Printf("error parsing update, %s", err.Error())
+		return
+	}
+
+	err = u.handleUpdate(update)
+	if err != nil {
+		log.Printf("Unable to handle update, err: %v.", err)
+	}
+}
+
 func MakeUpdateHandler(botService botservice.Sender, userService user_service.Service) *UpdateHandler {
 	return &UpdateHandler{
 		botService:  botService,
@@ -26,7 +51,7 @@ func MakeUpdateHandler(botService botservice.Sender, userService user_service.Se
 	}
 }
 
-func (u *UpdateHandler) HandleUpdate(update *tgbotapi.Update) error {
+func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
 	if update.Message != nil {
 		cmd := update.Message.Command()
 
