@@ -3,7 +3,7 @@ package eng
 func Get(id int) string {
 	return [...]string{
 		"Not a valid time format, please try *%s*.",
-		"Is it wake up time or go to sleep time?",
+		"Is it a wake up time or go to sleep time?",
 		"The best time to go to sleep is:\n",
 		"The best time to wake up is:\n",
 

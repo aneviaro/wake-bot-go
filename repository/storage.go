@@ -1,4 +1,4 @@
-package storage
+package repository
 
 import (
 	"encoding/binary"
@@ -9,6 +9,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
+// Storage is deprecated
 type Storage struct {
 	db *bolt.DB
 }

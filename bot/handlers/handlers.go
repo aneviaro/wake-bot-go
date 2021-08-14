@@ -1,4 +1,4 @@
-package update_handler
+package handlers
 
 import (
 	"encoding/json"
@@ -7,17 +7,17 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	botservice "wake-bot/usecase/bot-service"
+	botservice "wake-bot/usecase/bot"
 	"wake-bot/usecase/translation"
-	user_service "wake-bot/usecase/user-service"
+	userservice "wake-bot/usecase/user"
 	"wake-bot/user"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type UpdateHandler struct {
-	botService  botservice.Sender
-	userService user_service.Service
+	botService  botservice.SenderMaker
+	userService userservice.IService
 }
 
 // parseTelegramRequest handles incoming update from the Telegram web hook
@@ -43,7 +43,7 @@ func (u *UpdateHandler) HandleTelegramWebHook(_ http.ResponseWriter, r *http.Req
 	}
 }
 
-func MakeUpdateHandler(botService botservice.Sender, userService user_service.Service) *UpdateHandler {
+func MakeUpdateHandler(botService botservice.SenderMaker, userService userservice.IService) *UpdateHandler {
 	return &UpdateHandler{
 		botService:  botService,
 		userService: userService,
@@ -65,6 +65,9 @@ func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
 
 	if update.CallbackQuery != nil {
 		log.Printf("Handling incoming callback: %s.", update.CallbackQuery.Data)
+
+		// prevents multiple answers on same callback
+		_ = u.botService.AnswerOnCallback(update.CallbackQuery.ID)
 		return u.handleCallback(update)
 	}
 

@@ -1,27 +1,27 @@
-package user_service
+package user
 
 import (
-	"wake-bot/storage"
+	"wake-bot/repository"
 	"wake-bot/user"
 )
 
-type UserService struct {
-	store storage.Store
+type Service struct {
+	store repository.Store
 }
 
-func NewUserService(store storage.Store) *UserService {
-	return &UserService{store: store}
+func NewUserService(store repository.Store) *Service {
+	return &Service{store: store}
 }
 
-func (u UserService) GetByID(id int64) (*user.User, error) {
+func (u Service) GetByID(id int64) (*user.User, error) {
 	return u.store.GetByID(id)
 }
 
-func (u UserService) NewUser(user user.User) error {
+func (u Service) NewUser(user user.User) error {
 	return u.store.Save(user)
 }
 
-func (u UserService) Update(fromUser user.User) error {
+func (u Service) Update(fromUser user.User) error {
 	toUser, err := u.store.GetByID(fromUser.ChatID)
 	if err != nil {
 		return err

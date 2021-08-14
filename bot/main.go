@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	updatehandler "wake-bot/bot/update-handler"
-	"wake-bot/storage"
-	botservice "wake-bot/usecase/bot-service"
-	user_service "wake-bot/usecase/user-service"
+	"wake-bot/bot/handlers"
+	"wake-bot/repository"
+	botservice "wake-bot/usecase/bot"
+	userservice "wake-bot/usecase/user"
 
 	"cloud.google.com/go/datastore"
 
@@ -29,12 +29,12 @@ func main() {
 
 	defer dsClient.Close()
 
-	store := storage.NewDatastore(dsClient)
+	store := repository.NewDatastore(dsClient)
 
 	botService := botservice.NewBotService(bot)
-	userService := user_service.NewUserService(store)
+	userService := userservice.NewUserService(store)
 
-	handler := updatehandler.MakeUpdateHandler(botService, userService)
+	handler := handlers.MakeUpdateHandler(botService, userService)
 	http.HandleFunc("/", handler.HandleTelegramWebHook)
 
 

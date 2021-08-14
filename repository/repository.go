@@ -1,4 +1,4 @@
-package storage
+package repository
 
 import (
 	"context"
@@ -7,17 +7,17 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
-type Datastore struct {
+type UserRepository struct {
 	client *datastore.Client
 }
 
 const datastoreKind = "User"
 
-func NewDatastore(client *datastore.Client) Datastore {
-	return Datastore{client: client}
+func NewDatastore(client *datastore.Client) UserRepository {
+	return UserRepository{client: client}
 }
 
-func (d Datastore) GetByID(id int64) (*user.User, error) {
+func (d UserRepository) GetByID(id int64) (*user.User, error) {
 	ctx := context.Background()
 	q := datastore.NewQuery(datastoreKind).Filter("chat_id =", id)
 
@@ -31,7 +31,7 @@ func (d Datastore) GetByID(id int64) (*user.User, error) {
 	return &u[0], err
 }
 
-func (d Datastore) Save(u user.User) error {
+func (d UserRepository) Save(u user.User) error {
 	ctx := context.Background()
 
 	if u.K == nil {
