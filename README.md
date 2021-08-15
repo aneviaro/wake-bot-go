@@ -19,6 +19,12 @@ Run docker container via:
 docker run --env BOT_TOKEN=<your bot token goes there> wake-bot
 ```
 
+## Defect Management
+
+We use Trello board as a public issues tracker. To leave an issue to the project, please open a new github issue, we will migrate it to trello, then you will be able to track a progress on it.
+
+https://trello.com/b/iycB60bT/wakebot
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
