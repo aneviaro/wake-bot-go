@@ -23,6 +23,7 @@ func (bot *Service) SendMessage(chatID int64, message string, replyTo int, parse
 
 	msg.ParseMode = parseMode
 	_, err := bot.tg.Send(msg)
+
 	return err
 }
 
@@ -41,6 +42,7 @@ func (bot *Service) MakeOneButton(text1, data1 string) tgbotapi.InlineKeyboardMa
 	buttons = append(buttons,
 		tgbotapi.NewInlineKeyboardButtonData(text1, data1),
 	)
+
 	return tgbotapi.NewInlineKeyboardMarkup(buttons)
 }
 

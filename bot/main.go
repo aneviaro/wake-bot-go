@@ -12,7 +12,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 func main() {
@@ -22,6 +22,7 @@ func main() {
 	}
 
 	ctx := context.Background()
+
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("PROJECT"))
 	if err != nil {
 		log.Panicf("Unable to connect to datastore, err: %v", err)
@@ -36,7 +37,6 @@ func main() {
 
 	handler := handlers.MakeUpdateHandler(botService, userService)
 	http.HandleFunc("/", handler.HandleTelegramWebHook)
-
 
 	port := os.Getenv("PORT")
 

@@ -27,6 +27,7 @@ func parseTelegramRequest(r *http.Request) (*tgbotapi.Update, error) {
 		log.Printf("could not decode incoming update %s", err.Error())
 		return nil, err
 	}
+
 	return &update, nil
 }
 
@@ -60,6 +61,7 @@ func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
 		}
 
 		log.Printf("Handling incoming message: %s.", update.Message.Text)
+
 		return u.handleMessage(update)
 	}
 
@@ -68,6 +70,7 @@ func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
 
 		// prevents multiple answers on same callback
 		_ = u.botService.AnswerOnCallback(update.CallbackQuery.ID)
+
 		return u.handleCallback(update)
 	}
 
@@ -75,10 +78,9 @@ func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
 }
 
 func (u *UpdateHandler) handleMessage(update *tgbotapi.Update) error {
-
-	us, err := u.userService.GetByID(update.Message.Chat.ID)
 	var timeFormat user.TimeFormat
 
+	us, err := u.userService.GetByID(update.Message.Chat.ID)
 	if err != nil || us.ChatID == 0 {
 		return u.sendTimeFormatQuestion(update.Message.From.LanguageCode, update.Message.Chat.ID)
 	}
@@ -114,8 +116,9 @@ func (u *UpdateHandler) handleMessage(update *tgbotapi.Update) error {
 }
 
 func (u *UpdateHandler) handleCallback(update *tgbotapi.Update) error {
-	callbackData := update.CallbackQuery.Data
 	var err error
+
+	callbackData := update.CallbackQuery.Data
 
 	switch {
 	case strings.Contains(callbackData, "clarification"):
@@ -132,6 +135,7 @@ func (u *UpdateHandler) handleCallback(update *tgbotapi.Update) error {
 func (u UpdateHandler) handleGotItCallback(update *tgbotapi.Update) error {
 	langCode := update.CallbackQuery.From.LanguageCode
 	chatID := update.CallbackQuery.Message.Chat.ID
+
 	return u.sendTimeFormatQuestion(langCode, chatID)
 }
 
@@ -157,6 +161,7 @@ func (u UpdateHandler) handleTimeFormatCallback(update *tgbotapi.Update) error {
 
 	var us user.User
 	us.ChatID = update.CallbackQuery.Message.Chat.ID
+
 	switch update.CallbackQuery.Data {
 	case "timeFormat1":
 		us.TimeFormat = user.HourClock12
@@ -191,6 +196,7 @@ func (u UpdateHandler) handleCommand(update *tgbotapi.Update) error {
 			"Markdown",
 			&gotItButton,
 		)
+
 		return err
 	}
 
@@ -230,6 +236,7 @@ func (u *UpdateHandler) handleClarificationCallback(update *tgbotapi.Update) err
 	}
 
 	var times []time.Time
+
 	var msgTest string
 
 	switch clarificationAnswer {

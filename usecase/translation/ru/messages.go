@@ -24,4 +24,3 @@ func Get(id int) string {
 		"Лечь спать",
 	}[id]
 }
-

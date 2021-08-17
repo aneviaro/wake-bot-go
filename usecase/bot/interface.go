@@ -9,7 +9,7 @@ type SenderMaker interface {
 
 type Sender interface {
 	SendMessage(chatID int64, message string, replyTo int, parseMode string, keyboard *tgbotapi.
-	InlineKeyboardMarkup) error
+		InlineKeyboardMarkup) error
 	AnswerOnCallback(id string) error
 }
 

@@ -17,8 +17,8 @@ func (u Service) GetByID(id int64) (*user.User, error) {
 	return u.store.GetByID(id)
 }
 
-func (u Service) NewUser(user user.User) error {
-	return u.store.Save(user)
+func (u Service) NewUser(newUser user.User) error {
+	return u.store.Save(newUser)
 }
 
 func (u Service) Update(fromUser user.User) error {
