@@ -2,18 +2,22 @@ package bot
 
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 
+// SenderMaker sets behavior of a bot methods, includes MessageSender and KeyboardMaker interfaces.
 type SenderMaker interface {
-	Sender
-	Maker
+	MessageSender
+	KeyboardMaker
 }
 
-type Sender interface {
-	SendMessage(chatID int64, message string, replyTo int, parseMode string, keyboard *tgbotapi.
-		InlineKeyboardMarkup) error
-	AnswerOnCallback(id string) error
+// MessageSender sets behaviour of a bot methods for sending messages to the bot.
+type MessageSender interface {
+	SendMessage(chatID int64, message string, opts ...Option) error
+	AnswerOnCallback(id, label string)
+	SendClarificationMessage(chatID int64, replyTo int, languageCode string) error
+	SendTimeFormatMessage(chatID int64, replyTo int, languageCode string) error
+	SendNotValidTimeFormatMessage(chatID int64, replyTo int, languageCode, timeFormat string) error
 }
 
-type Maker interface {
-	MakeClarificationButtons(text1, data1, text2, data2 string) tgbotapi.InlineKeyboardMarkup
-	MakeOneButton(text1, data1 string) tgbotapi.InlineKeyboardMarkup
+// KeyboardMaker sets behaviour of the tg keyboard manager.
+type KeyboardMaker interface {
+	MakeInlineKeyboard(btns ...Button) tgbotapi.InlineKeyboardMarkup
 }

@@ -1,5 +1,6 @@
 package ru
 
+// Get returnes a message by id
 func Get(id int) string {
 	return [...]string{
 		"Неправильное время, пожалуйста, попробуйте *%s*.",
@@ -22,5 +23,6 @@ func Get(id int) string {
 		"24-часовой",
 		"Проснуться",
 		"Лечь спать",
+		"Время действия кнопки истекло",
 	}[id]
 }

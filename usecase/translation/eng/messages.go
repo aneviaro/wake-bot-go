@@ -1,5 +1,6 @@
 package eng
 
+// Get returns a message by id
 func Get(id int) string {
 	return [...]string{
 		"Not a valid time format, please try *%s*.",
@@ -24,5 +25,6 @@ func Get(id int) string {
 		"24-hour",
 		"Wake Up",
 		"Go to sleep",
+		"Button expired",
 	}[id]
 }

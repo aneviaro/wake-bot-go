@@ -6,6 +6,7 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
+// TimeFormat is a string describing the possibnle time format for user.
 type TimeFormat string
 
 const (
@@ -13,6 +14,7 @@ const (
 	HourClock24 TimeFormat = "15:04"
 )
 
+// User is a datastore entity that represents the user.
 type User struct {
 	K          *datastore.Key `datastore:"__key__"`
 	ChatID     int64          `json:"chat_id" datastore:"chat_id"`

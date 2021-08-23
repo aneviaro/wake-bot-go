@@ -5,6 +5,7 @@ import (
 	"wake-bot/usecase/translation/ru"
 )
 
+// A list of constants that can be used by the translator to find a message in a particular language.
 const (
 	NotValidTimeFormat = iota
 	ClarificationQuestion
@@ -15,12 +16,14 @@ const (
 	Usage
 	GotIt
 	TimeFormatQuestion
-	TimeFormat1
-	TimeFormat2
+	AMPMTimeFormat
+	MilitaryTimeFormat
 	WakeUp
 	GoToSleep
+	ExpiredCallback
 )
 
+// Get finds a message by id in a langCode package.
 func Get(msgID int, langCode string) string {
 	switch langCode {
 	case "eng":
