@@ -18,7 +18,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN go build -o main
+RUN go build -o main ./cmd/bot
 
 # Move to /dist directory as the place for resulting binary folder
 WORKDIR /dist
@@ -27,4 +27,5 @@ WORKDIR /dist
 RUN cp /build/main .
 
 # Command to run when starting the container
-CMD ["/dist/main"]
+ENTRYPOINT ["/dist/main"]
+CMD ["-webhook-updates"]

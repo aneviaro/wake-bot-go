@@ -6,7 +6,7 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
-// TimeFormat is a string describing the possibnle time format for user.
+// TimeFormat is a string describing the possible time format for user.
 type TimeFormat string
 
 const (

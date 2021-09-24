@@ -7,6 +7,14 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
+// Store sets behavior for user repo
+type Store interface {
+	// GetByID select users with provided id
+	GetByID(id int64) (*user.User, error)
+	// Save saves user entity somewhere
+	Save(user user.User) error
+}
+
 // UserRepository represents a user datastore repository, implements the Store interface.
 type UserRepository struct {
 	client *datastore.Client
@@ -15,17 +23,16 @@ type UserRepository struct {
 const datastoreKind = "User"
 
 // NewRepository creates a new UserRepository.
-func NewRepository(client *datastore.Client) UserRepository {
-	return UserRepository{client: client}
+func NewRepository(client *datastore.Client) *UserRepository {
+	return &UserRepository{client: client}
 }
 
-// GetById gets a user from datastore by id.
-func (d UserRepository) GetByID(id int64) (*user.User, error) {
-	ctx := context.Background()
+// GetByID gets a user from datastore by id.
+func (d *UserRepository) GetByID(id int64) (*user.User, error) {
 	q := datastore.NewQuery(datastoreKind).Filter("chat_id =", id)
 
 	var u []user.User
-	_, err := d.client.GetAll(ctx, q, &u)
+	_, err := d.client.GetAll(context.TODO(), q, &u)
 
 	if err != nil || len(u) == 0 {
 		return &user.User{}, err
@@ -35,8 +42,8 @@ func (d UserRepository) GetByID(id int64) (*user.User, error) {
 }
 
 // Save saves the given user into the datastore.
-func (d UserRepository) Save(u user.User) error {
-	ctx := context.Background()
+func (d *UserRepository) Save(u user.User) error {
+	ctx := context.TODO()
 
 	if u.K == nil {
 		u.K = datastore.IncompleteKey(datastoreKind, nil)

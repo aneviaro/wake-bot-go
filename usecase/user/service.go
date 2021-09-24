@@ -5,6 +5,13 @@ import (
 	"wake-bot/user"
 )
 
+// IService sets a user service behavior.
+type IService interface {
+	GetByID(id int64) (*user.User, error)
+	NewUser(user user.User) error
+	Update(newUser user.User) error
+}
+
 // Service is responsible for creating, updating and getting users. Is using repository.Store implementation.
 type Service struct {
 	store repository.Store
@@ -16,17 +23,17 @@ func NewService(store repository.Store) *Service {
 }
 
 // GetByID select a user by id from repository.
-func (u Service) GetByID(id int64) (*user.User, error) {
+func (u *Service) GetByID(id int64) (*user.User, error) {
 	return u.store.GetByID(id)
 }
 
 // NewUser creates a new user from given one. Is using repository.Store
-func (u Service) NewUser(newUser user.User) error {
+func (u *Service) NewUser(newUser user.User) error {
 	return u.store.Save(newUser)
 }
 
 // Update updates a user with a new one. Is using repository.Store.
-func (u Service) Update(fromUser user.User) error {
+func (u *Service) Update(fromUser user.User) error {
 	toUser, err := u.store.GetByID(fromUser.ChatID)
 	if err != nil {
 		return err

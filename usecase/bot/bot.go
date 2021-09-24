@@ -10,12 +10,33 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-// Service represents a bot's service.
+// SenderMaker sets behavior of a bot methods, includes MessageSender and KeyboardMaker interfaces.
+type SenderMaker interface {
+	MessageSender
+	KeyboardMaker
+}
+
+// MessageSender sets behaviour of a bot methods for sending messages to the bot.
+type MessageSender interface {
+	SendMessage(chatID int64, message string, opts ...Option) error
+	AnswerOnCallback(id, label string)
+	SendClarificationMessage(chatID int64, replyTo int, languageCode string) error
+	SendTimeFormatMessage(chatID int64, replyTo int, languageCode string) error
+	SendNotValidTimeFormatMessage(chatID int64, replyTo int, languageCode, timeFormat string) error
+}
+
+// KeyboardMaker sets behaviour of the tg keyboard manager.
+type KeyboardMaker interface {
+	MakeInlineKeyboard(btns ...Button) tgbotapi.InlineKeyboardMarkup
+}
+
+
+// Service represents a bots service.
 type Service struct {
 	tg *tgbotapi.BotAPI
 }
 
-// NewService creates a new Service.
+// NewBotService creates a new Service.
 func NewBotService(bot *tgbotapi.BotAPI) *Service {
 	return &Service{tg: bot}
 }
