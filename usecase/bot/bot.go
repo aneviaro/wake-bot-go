@@ -30,7 +30,6 @@ type KeyboardMaker interface {
 	MakeInlineKeyboard(btns ...Button) tgbotapi.InlineKeyboardMarkup
 }
 
-
 // Service represents a bots service.
 type Service struct {
 	tg *tgbotapi.BotAPI
