@@ -19,4 +19,5 @@ type User struct {
 	TimeFormat TimeFormat     `json:"time_format" datastore:"time_format"`
 	TimeZone   string         `json:"time_zone" datastore:"time_zone"`
 	WakeUpTime time.Time      `json:"wake_up_time" datastore:"wake_up_time"`
+	UTCOffset  int            `datastore:"utc_offset"`
 }

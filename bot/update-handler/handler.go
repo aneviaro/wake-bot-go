@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 	botservice "wake-bot/usecase/bot-service"
@@ -21,14 +22,11 @@ type UpdateHandler struct {
 	userService user_service.Service
 }
 
-// parseTelegramRequest handles incoming update from the Telegram web hook
-func parseTelegramRequest(r *http.Request) (*tgbotapi.Update, error) {
-	var update tgbotapi.Update
-	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
-		log.Printf("could not decode incoming update %s", err.Error())
-		return nil, err
+func MakeUpdateHandler(botService botservice.Sender, userService user_service.Service) *UpdateHandler {
+	return &UpdateHandler{
+		botService:  botService,
+		userService: userService,
 	}
-	return &update, nil
 }
 
 func (u *UpdateHandler) HandleTelegramWebHook(_ http.ResponseWriter, r *http.Request) {
@@ -44,11 +42,14 @@ func (u *UpdateHandler) HandleTelegramWebHook(_ http.ResponseWriter, r *http.Req
 	}
 }
 
-func MakeUpdateHandler(botService botservice.Sender, userService user_service.Service) *UpdateHandler {
-	return &UpdateHandler{
-		botService:  botService,
-		userService: userService,
+// parseTelegramRequest handles incoming update from the Telegram web hook
+func parseTelegramRequest(r *http.Request) (*tgbotapi.Update, error) {
+	var update tgbotapi.Update
+	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
+		log.Printf("could not decode incoming update %s", err.Error())
+		return nil, err
 	}
+	return &update, nil
 }
 
 func (u *UpdateHandler) handleUpdate(update *tgbotapi.Update) error {
@@ -173,19 +174,31 @@ func (u UpdateHandler) handleTimeFormatCallback(update *tgbotapi.Update) error {
 	}
 
 	markup := u.botService.MakeRequestLocationButton()
-
-	return u.botService.SendMessage(
+	err = u.botService.SendMessage(
 		update.CallbackQuery.Message.Chat.ID,
 		translation.Get(translation.Timezone, langCode),
 		0,
 		"Markdown",
 		&markup,
 	)
+	if err != nil {
+		return err
+	}
+
+	return u.botService.SendMessage(
+		update.CallbackQuery.Message.Chat.ID,
+		translation.Get(translation.SendTimezoneManually, langCode),
+		0,
+		"Markdown",
+		nil,
+	)
 }
 
 func (u UpdateHandler) handleCommand(update *tgbotapi.Update) error {
 	langCode := update.Message.From.LanguageCode
-	if update.Message.Text == "/start" || strings.Contains(update.Message.Text, "/restart") {
+	switch {
+	case strings.Contains(update.Message.Text, "/start"):
+	case strings.Contains(update.Message.Text, "/restart"):
 		gotItButton := u.botService.MakeOneButton(translation.Get(translation.GotIt, langCode), "gotit")
 		err := u.botService.SendMessage(
 			update.Message.Chat.ID,
@@ -195,15 +208,18 @@ func (u UpdateHandler) handleCommand(update *tgbotapi.Update) error {
 			&gotItButton,
 		)
 		return err
+	case strings.Contains(update.Message.Text, "/timezone"):
+		return u.handleManualTimezone(update)
+	default:
+		return u.botService.SendMessage(
+			update.Message.Chat.ID,
+			translation.Get(translation.NotCorrectCommand, langCode),
+			update.Message.MessageID,
+			"Markdown",
+			nil,
+		)
 	}
-
-	return u.botService.SendMessage(
-		update.Message.Chat.ID,
-		translation.Get(translation.NotCorrectCommand, langCode),
-		update.Message.MessageID,
-		"Markdown",
-		nil,
-	)
+	return nil
 }
 
 func (u *UpdateHandler) handleClarificationCallback(update *tgbotapi.Update) error {
@@ -285,6 +301,63 @@ func (u *UpdateHandler) handleLocationTimezone(update *tgbotapi.Update) error {
 	return u.botService.SendMessage(
 		update.Message.Chat.ID,
 		fmt.Sprintf(translation.Get(translation.TimezoneOk, langCode), zone[0]),
+		0,
+		"Markdown",
+		nil,
+	)
+}
+
+func (u *UpdateHandler) handleManualTimezone(update *tgbotapi.Update) error {
+	langCode := update.Message.From.LanguageCode
+	messageSplit := strings.Split(update.Message.Text, " ")
+	if len(messageSplit) != 2 {
+		return u.botService.SendMessage(
+			update.Message.Chat.ID,
+			translation.Get(translation.TimezoneNotOk, langCode),
+			0,
+			"Markdown",
+			nil,
+		)
+	}
+
+	offset, err := strconv.Atoi(messageSplit[1])
+	if err != nil || offset > 14 || offset < -12 {
+		return u.botService.SendMessage(
+			update.Message.Chat.ID,
+			translation.Get(translation.TimezoneNotOk, langCode),
+			0,
+			"Markdown",
+			nil,
+		)
+	}
+
+	var us user.User
+
+	us.ChatID = update.Message.Chat.ID
+	us.UTCOffset = offset
+
+	err = u.userService.Update(us)
+	if err != nil {
+		return err
+	}
+
+	err = u.botService.SendMessage(
+		update.Message.Chat.ID,
+		fmt.Sprintf(translation.Get(translation.TimezoneOk, langCode), offset),
+		0,
+		"Markdown",
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	return u.botService.SendMessage(
+		us.ChatID,
+		fmt.Sprintf(
+			translation.Get(translation.Usage, langCode),
+			u.userService.GetUserTime(us.ChatID),
+		),
 		0,
 		"Markdown",
 		nil,
