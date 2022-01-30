@@ -12,7 +12,7 @@ type Store interface {
 	// GetByID select users with provided id
 	GetByID(id int64) (*user.User, error)
 	// Save saves user entity somewhere
-	Save(user user.User) error
+	Save(user *user.User) error
 }
 
 // UserRepository represents a user datastore repository, implements the Store interface.
@@ -42,14 +42,14 @@ func (d *UserRepository) GetByID(id int64) (*user.User, error) {
 }
 
 // Save saves the given user into the datastore.
-func (d *UserRepository) Save(u user.User) error {
+func (d *UserRepository) Save(u *user.User) error {
 	ctx := context.TODO()
 
 	if u.K == nil {
 		u.K = datastore.IncompleteKey(datastoreKind, nil)
 	}
 
-	_, err := d.client.Put(ctx, u.K, &u)
+	_, err := d.client.Put(ctx, u.K, u)
 
 	return err
 }

@@ -9,4 +9,5 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78 // indirect
 	golang.org/x/sys v0.0.0-20210608053332-aa57babbf139 // indirect
+	gopkg.in/ugjka/go-tz.v2 v2.0.13
 )

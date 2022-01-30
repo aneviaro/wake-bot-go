@@ -20,4 +20,15 @@ var engMessages = map[int]string{
 	WakeUp:             "Wake Up",
 	GoToSleep:          "Go to sleep",
 	ExpiredCallback:    "Button expired",
+	TimezoneNotOk:      "I can't determine your timezone.",
+	TimezoneOk:         "Thanks! Your timezone is %s.\nIn case you want to change your timezone, just send me a new location via telegram attachment.",
+	Timezone: "Please, click on the button below to send your location so I can determine your timezone. " +
+		"I don't store your personal information, so nothing to worry about!",
+	SendTimezoneManually: "If you don't want to share your location with me, click on \"Send UTC Offset\" button below." +
+		"I will send you a list of available timezones.",
+	SendUTCOffset:   "Send UTC Offset",
+	Location:        "Current Location",
+	ChooseUTCOffset: "Please, choose you UTC offset on a keyboard below.",
+	FallAsleepTimeout: "The normal time it takes most people to fall asleep at night is between 10 and 20 minutes." +
+		" I will calculate the best time for you to wake up with regards to this timings.",
 }

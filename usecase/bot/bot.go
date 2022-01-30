@@ -23,6 +23,8 @@ type MessageSender interface {
 	SendClarificationMessage(chatID int64, replyTo int, languageCode string) error
 	SendTimeFormatMessage(chatID int64, replyTo int, languageCode string) error
 	SendNotValidTimeFormatMessage(chatID int64, replyTo int, languageCode, timeFormat string) error
+	SendLocationRequest(chatID int64, languageCode string) error
+	SendManualTimezoneList(chatID int64, languageCode string) error
 }
 
 // KeyboardMaker sets behaviour of the tg keyboard manager.
@@ -90,6 +92,19 @@ func WithKeyboard(k *tgbotapi.InlineKeyboardMarkup) Option {
 	return keyboardOption{k}
 }
 
+type replyKeyboardOption struct {
+	keyboard *tgbotapi.ReplyKeyboardMarkup
+}
+
+func (o replyKeyboardOption) apply(opts *tgbotapi.MessageConfig) {
+	opts.ReplyMarkup = o.keyboard
+}
+
+// WithReplyKeyboard casts a tgbotapi.ReplyKeyboardMarkup to a keyboardOption
+func WithReplyKeyboard(k *tgbotapi.ReplyKeyboardMarkup) Option {
+	return replyKeyboardOption{k}
+}
+
 // SendMessage sends a message to the bot with a set of options.
 func (bot *Service) SendMessage(chatID int64, message string, opts ...Option) error {
 	msg := tgbotapi.NewMessage(chatID, message)
@@ -141,6 +156,48 @@ func (bot *Service) SendNotValidTimeFormatMessage(chatID int64, replyTo int, lan
 		fmt.Sprintf(translation.Get(translation.NotValidTimeFormat, languageCode),
 			time.Now().UTC().Format(timeFormat)),
 		WithReplyTo(replyTo),
+	)
+}
+
+// SendLocationRequest sends a location request.
+func (bot *Service) SendLocationRequest(chatID int64, languageCode string) error {
+	lButton := tgbotapi.NewKeyboardButton(translation.Get(translation.Location, languageCode))
+	mButton := tgbotapi.NewKeyboardButton(translation.Get(translation.SendUTCOffset, languageCode))
+	lButton.RequestLocation = true
+
+	markup := tgbotapi.NewReplyKeyboard(tgbotapi.NewKeyboardButtonRow(lButton, mButton))
+	markup.ResizeKeyboard = true
+	markup.OneTimeKeyboard = true
+
+	return bot.SendMessage(
+		chatID,
+		translation.Get(translation.Timezone, languageCode),
+		WithReplyKeyboard(&markup),
+	)
+}
+
+func (bot *Service) SendManualTimezoneList(chatID int64, languageCode string) error {
+	var btnSl []tgbotapi.KeyboardButton
+	for i := -12; i < 15; i++ {
+		btnSl = append(btnSl, tgbotapi.NewKeyboardButton(fmt.Sprintf("UTC %+d", i)))
+	}
+
+	markup := tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(btnSl[:5]...),
+		tgbotapi.NewKeyboardButtonRow(btnSl[5:10]...),
+		tgbotapi.NewKeyboardButtonRow(btnSl[10:15]...),
+		tgbotapi.NewKeyboardButtonRow(btnSl[15:20]...),
+		tgbotapi.NewKeyboardButtonRow(btnSl[20:25]...),
+		tgbotapi.NewKeyboardButtonRow(btnSl[25:]...),
+	)
+
+	markup.ResizeKeyboard = true
+	markup.OneTimeKeyboard = true
+
+	return bot.SendMessage(
+		chatID,
+		translation.Get(translation.ChooseUTCOffset, languageCode),
+		WithReplyKeyboard(&markup),
 	)
 }
 

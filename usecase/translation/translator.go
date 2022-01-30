@@ -16,6 +16,14 @@ const (
 	WakeUp
 	GoToSleep
 	ExpiredCallback
+	TimezoneNotOk
+	TimezoneOk
+	Timezone
+	SendTimezoneManually
+	SendUTCOffset
+	Location
+	ChooseUTCOffset
+	FallAsleepTimeout
 )
 
 // Get finds a message by id in a langCode package.
