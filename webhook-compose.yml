@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  datastore:
+    image: google/cloud-sdk
+    command: gcloud beta emulators datastore start --host-port 0.0.0.0:8000 --project test --store-on-disk
+    ports:
+      - "8000:8000"
+  bot:
+    build: .
+    command: -webhook-updates
+    env_file:
+      - compose.env
+    ports:
+      - "8080:8080"

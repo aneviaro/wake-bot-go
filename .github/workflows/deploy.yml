@@ -41,4 +41,4 @@ jobs:
       run: |
         gcloud run deploy ${{ secrets.GCP_APPLICATION }} --image gcr.io/${{ secrets.GCP_PROJECT }}/${{ secrets.GCP_APPLICATION }} \
         --platform managed \
-        --set-env-vars PROJECT=${{ secrets.GCP_PROJECT }},BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+        --set-env-vars PROJECT=${{ secrets.GCP_PROJECT }},BOT_TOKEN=${{ secrets.BOT_TOKEN }},WEBHOOK_URL=${{ secrets.WEBHOOK_URL}}
