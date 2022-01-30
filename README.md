@@ -18,7 +18,7 @@ There are two ways to get updates from this bot
 1) Modify `compose.env` file, to store yours valid `BOT_TOKEN`
 2) Run the following command to start datastore emulator and bot automatically:
     ```
-   docker compose -f chan-compose.chan.yml up --build
+   docker compose -f chan-compose.yml up --build
    ```
 3) Try to use your bot from a telegram client
 
@@ -51,7 +51,7 @@ Paste it into `compose.env` file as a `WEBHOOK_URL`.
 
 5) Run the following command to start datastore emulator and bot automatically.
     ```
-    docker compose -f webhook-compose.chan.yml up --build
+    docker compose -f webhook-compose.yml up --build
     ```
 6) Try to use your bot from a telegram client
 

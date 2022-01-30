@@ -21,10 +21,10 @@ var engMessages = map[int]string{
 	GoToSleep:          "Go to sleep",
 	ExpiredCallback:    "Button expired",
 	TimezoneNotOk:      "I can't determine your timezone.",
-	TimezoneOk:         "Thanks! Your timezone is %s.\nIn case you want to change your timezone, just send me a new location via telegram attachment.",
+	TimezoneOk:         "Thanks! Your timezone is %s.\nIn case you want to change your timezone, just send me a new location via telegram attachment or in the \"UTC +5\" format.",
 	Timezone: "Please, click on the button below to send your location so I can determine your timezone. " +
 		"I don't store your personal information, so nothing to worry about!",
-	SendTimezoneManually: "If you don't want to share your location with me, click on \"Send UTC Offset\" button below." +
+	SendTimezoneManually: "If you don't want to share your location with me, click on \"Send UTC Offset\" button below.\n" +
 		"I will send you a list of available timezones.",
 	SendUTCOffset:   "Send UTC Offset",
 	Location:        "Current Location",
