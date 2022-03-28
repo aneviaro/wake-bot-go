@@ -16,7 +16,7 @@ import (
 	"wake-bot/user"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"gopkg.in/ugjka/go-tz.v2/tz"
+	"github.com/xrustalik/go-tz/v2/tz"
 )
 
 // UpdateHandler is handler for updates that comes from the Telegram bot.
