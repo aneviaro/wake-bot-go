@@ -29,7 +29,7 @@ func NewRepository(client *datastore.Client) *UserRepository {
 
 // GetByID gets a user from datastore by id.
 func (d *UserRepository) GetByID(id int64) (*user.User, error) {
-	q := datastore.NewQuery(datastoreKind).Filter("chat_id =", id)
+	q := datastore.NewQuery(datastoreKind).FilterField("chat_id", "=", id)
 
 	var u []user.User
 	_, err := d.client.GetAll(context.TODO(), q, &u)

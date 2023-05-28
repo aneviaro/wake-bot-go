@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 	"wake-bot/bot/handlers"
 	"wake-bot/repository"
 	botservice "wake-bot/usecase/bot"
@@ -99,7 +100,12 @@ func runWebhookHandler(bot *tgbotapi.BotAPI, handler *handlers.UpdateHandler) {
 
 	log.Printf("Listening on port %s", port)
 
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Panicln(err)
+	server := &http.Server{
+		Addr:              ":" + port,
+		ReadHeaderTimeout: 3 * time.Second,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
+		panic(err)
 	}
 }
