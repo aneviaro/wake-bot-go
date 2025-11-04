@@ -307,12 +307,10 @@ func (u *UpdateHandler) handleManualTimezone(update *tgbotapi.Update) error {
 	us.UTCOffset = fmt.Sprint(offset)
 	us.TZDefinedBy = user.Offset
 
-	//nolint:govet // better to reassign
 	if err := u.userService.Update(&us); err != nil {
 		return err
 	}
 
-	//nolint:govet // better to reassign
 	if err := u.botService.SendMessage(
 		update.Message.Chat.ID,
 		fmt.Sprintf(translation.Get(translation.TimezoneOk, langCode), fmt.Sprintf("UTC %+d", offset)),
